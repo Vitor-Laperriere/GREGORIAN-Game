@@ -14,14 +14,38 @@ std::string palavraSorteada;
 std::vector<std::string> dicionario;
 
 // Função para carregar o dicionário de palavras
-void carregarDicionario() {
-    // Implemente o código para carregar as palavras do dicionário
+void carregarVetor(std::vector<std::string>& array) {
+    std::ifstream arquivo("dicio.txt");
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo." << std::endl;
+        return;
+    }
+
+    std::string palavra;
+    while (std::getline(arquivo, palavra)) {
+        array.push_back(palavra);
+    }
+
+    arquivo.close();
+}
+
+std::string sortearPalavra(const std::vector<std::string>& array) {
+    if (array.empty()) {
+        std::cerr << "O dicionário está vazio." << std::endl;
+        return "";
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, array.size() - 1);
+
+    int indiceAleatorio = dis(gen);
+
+    return array[indiceAleatorio];
 }
 
 // Função para sortear uma palavra
-void sortearPalavra() {
-    // Implemente o código para sortear uma palavra do dicionário
-}
 
 void jogar() {
     std::unique_lock<std::mutex> lock(mtx);
@@ -35,15 +59,19 @@ void jogar() {
 
 void iniciarJogo() {
     std::lock_guard<std::mutex> lock(mtx);
-    carregarDicionario();
-    sortearPalavra();
+    //carregarDicionario();
+   // sortearPalavra();
     ready = true;
     cv.notify_one();
 }
 
 int main() {
-    std::thread threadJogo(jogar);
-    iniciarJogo();
-    threadJogo.join();
+    std::vector<std::string> palavras;
+    carregarVetor(palavras);
+    std::string palavraAleatoria = sortearPalavra(palavras);
+    std::cout << "Palavra aleatória " << palavraAleatoria << std::endl;
+
     return 0;
 }
+
+
