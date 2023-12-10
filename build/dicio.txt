@@ -1,0 +1,11 @@
+std:: string str1 = "abrir";
+std:: string str2 = "abriu";
+std:: string str3 = "abuso";
+std:: string str4 = "acaso";
+std:: string str5 = "acesa";
+std:: string str6 = "aceso";
+std:: string str7 = "achar";
+std:: string str8 = "acima";
+std:: string str9 = "adeus";
+std:: string str10 = "adiar";
+std:: string str11 = "advir";

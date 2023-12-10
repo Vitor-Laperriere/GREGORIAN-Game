@@ -6,12 +6,17 @@
 #include <vector>
 #include <fstream>
 #include <random>
+#include <semaphore>
+#include "gregorian_game.h" 
 
-std::mutex mtx;
-std::condition_variable cv;
-bool ready = false;
+
+// Variáveis globais para armazenar a palavra sorteada e o dicionário de palavras.
 std::string palavraSorteada;
 std::vector<std::string> dicionario;
+
+// Definindo um semáforo binário para controle de sincronização
+std::binary_semaphore semaforoSorteio(0), semaforoJogo(0);
+
 
 // Função para carregar o dicionário de palavras
 void carregarVetor(std::vector<std::string>& array) {
@@ -30,6 +35,7 @@ void carregarVetor(std::vector<std::string>& array) {
     arquivo.close();
 }
 
+// Função para sortear uma palavra aleatoriamente do dicionário.
 std::string sortearPalavra(const std::vector<std::string>& array) {
     if (array.empty()) {
         std::cerr << "O dicionário está vazio." << std::endl;
@@ -45,31 +51,24 @@ std::string sortearPalavra(const std::vector<std::string>& array) {
     return array[indiceAleatorio];
 }
 
-// Função para sortear uma palavra
+// Função executada por uma thread para controlar a lógica do jogo (sorteio da palavra).
+void logicaDoJogo() {
+   
+    palavraSorteada = sortearPalavra(dicionario);
+    semaforoSorteio.release();// Libera a thread principal para começar o jogo.
 
-void jogar() {
-    std::unique_lock<std::mutex> lock(mtx);
-    while (!ready) {
-        cv.wait(lock);
-    }
-    
-    // Implemente a lógica do jogo aqui
-    // Exemplo: loop para as 8 tentativas, verificação das letras, etc.
-}
+    semaforoJogo.acquire();// Espera a interação do usuário terminar.
 
-void iniciarJogo() {
-    std::lock_guard<std::mutex> lock(mtx);
-    //carregarDicionario();
-   // sortearPalavra();
-    ready = true;
-    cv.notify_one();
 }
 
 int main() {
-    std::vector<std::string> palavras;
-    carregarVetor(palavras);
-    std::string palavraAleatoria = sortearPalavra(palavras);
-    std::cout << "Palavra aleatória " << palavraAleatoria << std::endl;
+    
+    carregarVetor(dicionario);
+    std::thread threadLogica(logicaDoJogo);
+   
+    runGame(dicionario); // Note a passagem do dicionário como argumento
+    threadLogica.join();
+    
 
     return 0;
 }

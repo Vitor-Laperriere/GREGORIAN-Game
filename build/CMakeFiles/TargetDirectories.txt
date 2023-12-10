@@ -1,0 +1,3 @@
+/Users/vitorlaperriere/Desktop/USp/GREGORIAN-Game/build/CMakeFiles/GregorianGame.dir
+/Users/vitorlaperriere/Desktop/USp/GREGORIAN-Game/build/CMakeFiles/edit_cache.dir
+/Users/vitorlaperriere/Desktop/USp/GREGORIAN-Game/build/CMakeFiles/rebuild_cache.dir
